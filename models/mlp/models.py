@@ -17,7 +17,24 @@ logging.basicConfig(
     level=logging.DEBUG
 )
 
+class Input_SortedEigen(nn.Module):
+    def __init__(self, dataset):
+        super(Input_SortedEigen, self).__init__()
+        self.output_size = 23
+        sorted_eigenvals = self.get_sorted_eigenvals(dataset)
+        self.mean = sorted_eigenvals.mean(dim=0)
+        self.std = (sorted_eigenvals - self.mean).std().item()
+
+    def get_sorted_eigenvals(self, coulomb_matrices):
+        eigenvals = torch.linalg.eigvalsh(coulomb_matrices)
+        
+        # Sort the eigenvalues by their absolute values in descending order
+        sorted_eigenvals = torch.sort(torch.abs(eigenvals), dim=1, descending=True).values
+        return sorted_eigenvals
     
+    def forward(self, coulomb_matrices):
+        return (self.get_sorted_eigenvals(coulomb_matrices) - self.mean) / self.std
+        
 class Input_RandomSortecCM(nn.Module):
     def __init__(self, dataset, step=1.0, noise=1.0):
         super(Input_RandomSortecCM, self).__init__()
@@ -92,14 +109,19 @@ class CustomLinear(nn.Module):
     #         self.A -= lr * self.lr * self.DA
 
 class Output(nn.Module):
-    def __init__(self, T):
+    def __init__(self, T=None):
         super(Output, self).__init__()
-        self.tmean = T.mean().item()
-        self.tstd = T.std().item()
+        if T is not None:
+            self.tmean = T.mean().item()
+            self.tstd = T.std().item()
+        else:
+            self.tmean = 0
+            self.tstd = 1
         self.input_size = 1
 
     def forward(self, X):
-        self.X = X.flatten()
+        # self.X = X.flatten()
+        self.X = X
         return self.X * self.tstd + self.tmean
 
     # def backward(self, DY):
@@ -119,7 +141,7 @@ class MLP(nn.Module):
         
         layers = []
         for i in range(len(all_sizes) - 1):
-            layers.append(CustomLinear(all_sizes[i], all_sizes[i + 1]))
+            layers.append(nn.Linear(all_sizes[i], all_sizes[i + 1]))
             if i < len(all_sizes) - 2:  # Don't add activation after last layer
                 if activation_type == "tanh":
                     layers.append(nn.Tanh())
@@ -131,8 +153,8 @@ class MLP(nn.Module):
         # Unwrap into nn.Sequential
         self.network = nn.Sequential(*layers)
 
-    def forward(self, X, noise=1.0):
-        processed_X = self.preprocess(X, noise)
+    def forward(self, X):
+        processed_X = self.preprocess(X)
         out = self.network(processed_X)
         return self.postprocess(out)
 
@@ -155,31 +177,31 @@ class ModelPL(pl.LightningModule):
         # self.val_mse = MeanSquaredError()
         # self.test_mse = MeanSquaredError()
 
-    def forward(self, data, noise=1.0):
-        return self.model(data, noise=noise)
+    def forward(self, data):
+        return self.model(data)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.SGD(self.parameters(), lr=self.learning_rate * 0.001)
-        # lr_scheduler = {
-        #     'scheduler': optim.lr_scheduler.ReduceLROnPlateau(
-        #         optimizer, 
-        #         mode='min', 
-        #         factor=0.25, 
-        #         patience=5),
-        #     'monitor': 'val_loss', 
-        #     'interval': 'epoch',
-        #     'frequency': 1
-        # }
-        def lr_lambda(epoch):
-            if epoch > 12500:
-                return 0.01
-            elif epoch > 2500:
-                return 0.005
-            elif epoch > 500:
-                return 0.0025
-            else:
-                return 0.001
-        lr_scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        lr_scheduler = {
+            'scheduler': optim.lr_scheduler.ReduceLROnPlateau(
+                optimizer, 
+                mode='min', 
+                factor=0.25, 
+                patience=5),
+            'monitor': 'val_loss', 
+            'interval': 'epoch',
+            'frequency': 1
+        }
+        # def lr_lambda(epoch):
+        #     if epoch > 12500:
+        #         return 0.01
+        #     elif epoch > 2500:
+        #         return 0.005
+        #     elif epoch > 500:
+        #         return 0.0025
+        #     else:
+        #         return 0.001
+        # lr_scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
 
         return {'optimizer': optimizer, 'lr_scheduler': lr_scheduler}
         # return []
@@ -201,7 +223,7 @@ class ModelPL(pl.LightningModule):
 
     def validation_step(self, data, batch_idx):
         inputs, targets = data[0], data[1]
-        outputs = self(inputs, noise=0.0)
+        outputs = self(inputs)
         loss = self.criterion(outputs, targets)
         self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
         
