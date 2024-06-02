@@ -6,30 +6,28 @@ from torch.utils.data import DataLoader, TensorDataset, random_split
 
 from models import MLP, ModelPL
 
-def load_data(filepath, fold=1, feature="eigenspectrum"):
+def load_data(filepath, fold=0):
     dataset = scipy.io.loadmat(filepath)
-    y = atom_es = dataset["T"].squeeze()
-    X = coulomb_matrices = dataset["X"]
-    return X, y
+    ids_train = dataset['P'][list(range(0, fold)) + list(range(fold+1, 5))].flatten()
+    ids_test = dataset['P'][list(range(fold, fold+1))].flatten()
+    
+    X_train = coulomb_matrices = dataset['X'][ids_train]
+    y_train = atom_es = dataset['T'][0, ids_train]
+    
+    X_test = coulomb_matrices = dataset['X'][ids_test]
+    y_test = atom_es = dataset['T'][0, ids_test]
 
-def create_data_loaders(X, y, batch_size=64, split_ratio=0.8):
-    # Convert data to torch tensors
+    return X_train, y_train, X_test, y_test
+
+def create_data_loader(X, y, batch_size=32):
     X_tensor = torch.from_numpy(X.copy())
     y_tensor = torch.from_numpy(y.copy()).unsqueeze(-1)
     
-    # Create a dataset from tensors
     dataset = TensorDataset(X_tensor, y_tensor)
     
-    # Split dataset into training and validation sets
-    train_size = int(split_ratio * len(dataset))
-    val_size = len(dataset) - train_size
-    train_dataset, val_dataset = random_split(dataset, [train_size, val_size])
+    data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers = 2)
     
-    # Create dataloaders
-    train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers = 2)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers = 2)
-    
-    return train_loader, val_loader
+    return data_loader
 
 if __name__ == "__main__":
     import warnings
@@ -39,9 +37,9 @@ if __name__ == "__main__":
     torch.set_float32_matmul_precision('medium')
     
     filepath = "../../data/raw/qm7.mat"
-    X, y = load_data(filepath)
+    X_train, y_train, X_test, y_test = load_data(filepath)
 
-    matrix_size = X.shape[1]
+    matrix_size = X_train.shape[1]
     output_size = 1
 
     # Initialize the MLP and ModelPL
@@ -49,19 +47,22 @@ if __name__ == "__main__":
     mlp_pl = ModelPL(model=mlp, learning_rate=0.01, batch_size=64)
 
     # Create dataloaders
-    train_loader, val_loader = create_data_loaders(X, y)
+    train_loader = create_data_loader(X_train, y_train)
+    val_loader = create_data_loader(X_test, y_test)
 
     # Initialize PyTorch Lightning logger and callbacks
     logger = pl.loggers.CSVLogger(save_dir='logs', 
                                   name='model_training', 
-                                  version=0)
+                                  version=0,
+                                  )
     callbacks = []
     
     # Configure and run the trainer
     trainer = pl.Trainer(max_epochs=150, 
                          accelerator='gpu' if torch.cuda.is_available() else 'cpu',
                          callbacks=callbacks,
-                         logger=logger)
+                         logger=logger,
+                         )
 
     # Fit the model
     trainer.fit(mlp_pl, train_dataloaders=train_loader, val_dataloaders=val_loader)
