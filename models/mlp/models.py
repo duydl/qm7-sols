@@ -16,18 +16,22 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s', 
     level=logging.DEBUG
 )
-class RandomSortCM(nn.Module):
+
+    
+class Input_RandomSortecCM(nn.Module):
     def __init__(self, dataset, step=1.0, noise=1.0):
-        super(RandomSortCM, self).__init__()
+        super(Input_RandomSortecCM, self).__init__()
         self.step = step
         self.noise = noise
         self.triuind = (torch.arange(23)[:, None] <= torch.arange(23)[None, :]).flatten()
         self.device = dataset.device
         self.max = torch.Tensor([0.0]).to(self.device)
         for _ in range(10): self.max = torch.maximum(self.max,self.realize(dataset).max(dim=0)[0])
-        print("self max" ,self.max)
+        print("self max" ,self.max,self.max.shape)
         
-        realized_dataset = self.expand(self.realize(dataset))
+        realized_dataset_ = self.realize(dataset)
+        print("realized_dataset", realized_dataset_.shape, realized_dataset_)
+        realized_dataset = self.expand(realized_dataset_)
         print("realized_dataset", realized_dataset.shape, realized_dataset)
         self.output_size = realized_dataset.shape[1]
         self.mean = realized_dataset.mean(dim=0)
@@ -44,9 +48,11 @@ class RandomSortCM(nn.Module):
 
     def expand(self, X):
         Xexp = []
+        # print("X.shape[1]", X.shape[1])
         for i in range(X.shape[1]):
-            for k in torch.arange(0, self.max[i] + self.step, self.step):
+            for k in torch.arange(0, self.max[i], self.step):
                 Xexp.append(torch.tanh((X[:, i] - k) / self.step))
+        # print(len(Xexp))
         return torch.stack(Xexp).T
 
     def forward(self, X, noise):
@@ -56,20 +62,64 @@ class RandomSortCM(nn.Module):
 
         return X_normalized
     
+class CustomLinear(nn.Module):
+    def __init__(self, m, n):
+        super(CustomLinear, self).__init__()
+        self.tr = m**0.5 / n**0.5
+        self.lr = 1 / m**0.5
+
+        # Parameters
+        self.W = nn.Parameter(torch.tensor(torch.normal(0, 1 / m**0.5, [m, n])))
+        self.A = nn.Parameter(torch.zeros(m, dtype=torch.float32))
+        self.B = nn.Parameter(torch.zeros(n, dtype=torch.float32))
+    
+    def forward(self, X):
+        self.X = X
+        Y = torch.matmul(X - self.A, self.W) + self.B
+        return Y
+    
+    # def backward(self, DY):
+    #     self.DW = torch.matmul((self.X - self.A).T, DY)
+    #     self.DA = -(self.X - self.A).sum(dim=0)
+    #     self.DB = DY.sum(dim=0) + torch.matmul(self.DA, self.W)
+    #     DX = self.tr * torch.matmul(DY, self.W.T)
+    #     return DX
+    
+    # def update(self, lr):
+    #     with torch.no_grad():
+    #         self.W -= lr * self.lr * self.DW
+    #         self.B -= lr * self.lr * self.DB
+    #         self.A -= lr * self.lr * self.DA
+
+class Output(nn.Module):
+    def __init__(self, T):
+        super(Output, self).__init__()
+        self.tmean = T.mean().item()
+        self.tstd = T.std().item()
+        self.input_size = 1
+
+    def forward(self, X):
+        self.X = X.flatten()
+        return self.X * self.tstd + self.tmean
+
+    # def backward(self, DY):
+    #     return (DY / self.tstd).view(-1, 1).type(torch.float32)
 
 class MLP(nn.Module):
-    def __init__(self, preprocessor, output_size, hidden_sizes=[400, 100], activation_type="sigmoid"):
+    def __init__(self, preprocessor, postprocessor, hidden_sizes=[400, 100], activation_type="sigmoid"):
         super(MLP, self).__init__()
         
         self.preprocess = preprocessor
+        self.postprocess = postprocessor
         input_size = self.preprocess.output_size
+        output_size = self.postprocess.input_size
         
         # Create a list of all sizes: input, hidden layers, output
         all_sizes = [input_size] + hidden_sizes + [output_size]
         
         layers = []
         for i in range(len(all_sizes) - 1):
-            layers.append(nn.Linear(all_sizes[i], all_sizes[i + 1]))
+            layers.append(CustomLinear(all_sizes[i], all_sizes[i + 1]))
             if i < len(all_sizes) - 2:  # Don't add activation after last layer
                 if activation_type == "tanh":
                     layers.append(nn.Tanh())
@@ -83,11 +133,12 @@ class MLP(nn.Module):
 
     def forward(self, X, noise=1.0):
         processed_X = self.preprocess(X, noise)
-        return self.network(processed_X)
+        out = self.network(processed_X)
+        return self.postprocess(out)
 
 
 class ModelPL(pl.LightningModule):
-    def __init__(self, model, learning_rate=0.01, batch_size=64):
+    def __init__(self, model, learning_rate=0.001, batch_size=64):
         super().__init__()
         self.model = model
         self.learning_rate = learning_rate
@@ -108,7 +159,7 @@ class ModelPL(pl.LightningModule):
         return self.model(data, noise=noise)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate * 0.001)
+        optimizer = torch.optim.SGD(self.parameters(), lr=self.learning_rate * 0.001)
         # lr_scheduler = {
         #     'scheduler': optim.lr_scheduler.ReduceLROnPlateau(
         #         optimizer, 
@@ -131,11 +182,13 @@ class ModelPL(pl.LightningModule):
         lr_scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
 
         return {'optimizer': optimizer, 'lr_scheduler': lr_scheduler}
+        # return []
 
     def training_step(self, data, batch_idx):
         inputs, targets = data[0], data[1]
         outputs = self(inputs)
         loss = self.criterion(outputs, targets)
+        
         self.log('train_loss', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
         
         # self.train_mae(outputs, targets)

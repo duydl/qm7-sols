@@ -4,7 +4,7 @@ import numpy as np
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, TensorDataset, random_split
 
-from models import MLP, ModelPL, RandomSortCM
+from models import MLP, ModelPL, Input, Output
 
 import logging
 
@@ -32,7 +32,7 @@ def load_data(filepath, fold=None):
 
         return X_train, y_train, X_test, y_test
 
-def create_data_loader(X, y, batch_size=32):
+def create_data_loader(X, y, batch_size=25):
     X_tensor = torch.from_numpy(X.copy())
     y_tensor = torch.from_numpy(y.copy()).unsqueeze(-1)
     
@@ -55,12 +55,13 @@ if __name__ == "__main__":
 
     output_size = 1
 
-    # Initialize the MLP and ModelPL
-    preprocessor = RandomSortCM(torch.from_numpy(X_train)
+    # Initialize the MLP and ModelP
+    preprocessor = Input(torch.from_numpy(X_train)
                                 # .to('cuda' if torch.cuda.is_available() else 'cpu')
                                 .to('cpu')
                                 )
-    mlp = MLP(preprocessor=preprocessor, output_size=output_size, activation_type="relu")
+    postprocessor = Output(torch.from_numpy(y_train))
+    mlp = MLP(preprocessor=preprocessor, postprocessor=postprocessor, activation_type="relu")
     mlp_pl = ModelPL(model=mlp, learning_rate=0.01, batch_size=32)
 
     # Create dataloaders
