@@ -35,9 +35,9 @@ class Input_SortedEigen(nn.Module):
     def forward(self, coulomb_matrices):
         return (self.get_sorted_eigenvals(coulomb_matrices) - self.mean) / self.std
         
-class Input_RandomSortecCM(nn.Module):
+class Input_RandomSortedCM(nn.Module):
     def __init__(self, dataset, step=1.0, noise=1.0):
-        super(Input_RandomSortecCM, self).__init__()
+        super(Input_RandomSortedCM, self).__init__()
         self.step = step
         self.noise = noise
         self.triuind = (torch.arange(23)[:, None] <= torch.arange(23)[None, :]).flatten()
@@ -72,41 +72,12 @@ class Input_RandomSortecCM(nn.Module):
         # print(len(Xexp))
         return torch.stack(Xexp).T
 
-    def forward(self, X, noise):
+    def forward(self, X):
         X_realized = self.realize(X)
         X_expanded = self.expand(X_realized)
         X_normalized = (X_expanded - self.mean) / self.std
 
         return X_normalized
-    
-class CustomLinear(nn.Module):
-    def __init__(self, m, n):
-        super(CustomLinear, self).__init__()
-        self.tr = m**0.5 / n**0.5
-        self.lr = 1 / m**0.5
-
-        # Parameters
-        self.W = nn.Parameter(torch.tensor(torch.normal(0, 1 / m**0.5, [m, n])))
-        self.A = nn.Parameter(torch.zeros(m, dtype=torch.float32))
-        self.B = nn.Parameter(torch.zeros(n, dtype=torch.float32))
-    
-    def forward(self, X):
-        self.X = X
-        Y = torch.matmul(X - self.A, self.W) + self.B
-        return Y
-    
-    # def backward(self, DY):
-    #     self.DW = torch.matmul((self.X - self.A).T, DY)
-    #     self.DA = -(self.X - self.A).sum(dim=0)
-    #     self.DB = DY.sum(dim=0) + torch.matmul(self.DA, self.W)
-    #     DX = self.tr * torch.matmul(DY, self.W.T)
-    #     return DX
-    
-    # def update(self, lr):
-    #     with torch.no_grad():
-    #         self.W -= lr * self.lr * self.DW
-    #         self.B -= lr * self.lr * self.DB
-    #         self.A -= lr * self.lr * self.DA
 
 class Output(nn.Module):
     def __init__(self, T=None):
@@ -210,7 +181,8 @@ class ModelPL(pl.LightningModule):
         inputs, targets = data[0], data[1]
         outputs = self(inputs)
         loss = self.criterion(outputs, targets)
-        
+        lr = self.optimizers().param_groups[0]['lr']
+        self.log('learning_rate', lr, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
         self.log('train_loss', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
         
         # self.train_mae(outputs, targets)

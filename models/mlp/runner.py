@@ -4,7 +4,7 @@ import numpy as np
 import pytorch_lightning as pl
 from torch.utils.data import DataLoader, TensorDataset, random_split
 
-from models import MLP, ModelPL, Input_RandomSortecCM, Input_SortedEigen, Output
+from models import MLP, ModelPL, Input_RandomSortedCM, Input_SortedEigen, Output
 
 import logging
 
@@ -56,18 +56,18 @@ if __name__ == "__main__":
     output_size = 1
 
     # Initialize the MLP and ModelP
-    # preprocessor = Input(torch.from_numpy(X_train)
-    #                             # .to('cuda' if torch.cuda.is_available() else 'cpu')
-    #                             .to('cpu')
-    #                             )
-    # postprocessor = Output(torch.from_numpy(y_train))
-    preprocessor = Input_SortedEigen(torch.from_numpy(X_train)
+    preprocessor = Input_RandomSortedCM(torch.from_numpy(X_train)
                                 # .to('cuda' if torch.cuda.is_available() else 'cpu')
                                 .to('cpu')
                                 )
+
+    # preprocessor = Input_SortedEigen(torch.from_numpy(X_train)
+    #                             # .to('cuda' if torch.cuda.is_available() else 'cpu')
+    #                             .to('cpu')
+    #                             )
     postprocessor = Output(torch.from_numpy(y_train))
     mlp = MLP(preprocessor=preprocessor, postprocessor=postprocessor, activation_type="relu")
-    mlp_pl = ModelPL(model=mlp, learning_rate=0.01, batch_size=64)
+    mlp_pl = ModelPL(model=mlp, learning_rate=0.001, batch_size=64)
 
     # Create dataloaders
     train_loader = create_data_loader(X_train, y_train)
