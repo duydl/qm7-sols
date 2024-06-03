@@ -1,6 +1,7 @@
 from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.kernel_ridge import KernelRidge
 from sklearn.svm import SVR
+from sklearn.neighbors import KNeighborsRegressor
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
@@ -51,6 +52,16 @@ def get_models(model_names=None):
                 'regressor__C': np.logspace(3, 5, 3),
                 'regressor__epsilon': np.logspace(0, 3, 3),
                 # 'regressor__gamma': np.logspace(-5, -4, 2),
+            }
+        },
+        'KNN': {
+            'model': Pipeline(
+                standard_scaling +
+                [('regressor', KNeighborsRegressor())]),
+            'params': {
+                'regressor__n_neighbors': np.linspace(1, 10, 5).astype(int),
+                'regressor__weights': ['uniform', 'distance'],
+                'regressor__p': np.array([1, 2])  # 1 for Manhattan distance, 2 for Euclidean distance
             }
         }
     }

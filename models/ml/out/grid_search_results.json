@@ -1,335 +1,407 @@
 {
-    "KernelRidge": [
+    "KNN": [
         {
-            "MSE": 335.1009948730469,
+            "MAE": 12.915345191955566,
             "parameters": {
-                "regressor__alpha": 0.001,
-                "regressor__gamma": 0.001
+                "regressor__n_neighbors": 1,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 736.5814331054687,
+            "MAE": 12.915344941058695,
             "parameters": {
-                "regressor__alpha": 0.001,
-                "regressor__gamma": 0.0001
+                "regressor__n_neighbors": 1,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 1406.7426513671876,
+            "MAE": 13.97699203491211,
             "parameters": {
-                "regressor__alpha": 0.001,
-                "regressor__gamma": 1e-05
+                "regressor__n_neighbors": 1,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 287.2007629394531,
+            "MAE": 13.976992161092605,
             "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 0.001
+                "regressor__n_neighbors": 1,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 1213.898095703125,
+            "MAE": 13.774430656433106,
             "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 0.0001
+                "regressor__n_neighbors": 5,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 3255.7279052734375,
+            "MAE": 13.17111342581823,
             "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 1e-05
+                "regressor__n_neighbors": 5,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 381.4468139648437,
+            "MAE": 14.759182739257813,
             "parameters": {
-                "regressor__alpha": 1e-05,
-                "regressor__gamma": 0.001
+                "regressor__n_neighbors": 5,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 1965.006201171875,
+            "MAE": 14.168557712980302,
             "parameters": {
-                "regressor__alpha": 1e-05,
-                "regressor__gamma": 0.0001
+                "regressor__n_neighbors": 5,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 1672.5428466796875,
+            "MAE": 15.102705764770509,
             "parameters": {
-                "regressor__alpha": 1e-05,
-                "regressor__gamma": 1e-05
+                "regressor__n_neighbors": 10,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 383.15228881835935,
+            "MAE": 14.247351493568683,
             "parameters": {
-                "regressor__alpha": 3.1622776601683795e-05,
-                "regressor__gamma": 0.001
+                "regressor__n_neighbors": 10,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 496.20196533203125,
+            "MAE": 16.137469673156737,
             "parameters": {
-                "regressor__alpha": 3.1622776601683795e-05,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 10,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 1115.649169921875,
+            "MAE": 15.212533880785028,
             "parameters": {
-                "regressor__alpha": 3.1622776601683795e-05,
-                "regressor__gamma": 0.1
+                "regressor__n_neighbors": 10,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 287.2007629394531,
+            "MAE": 16.256963348388673,
             "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 0.001
+                "regressor__n_neighbors": 15,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 224.40309143066406,
+            "MAE": 15.250081070555542,
             "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 15,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 1048.6200561523438,
+            "MAE": 17.16347885131836,
             "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 0.1
+                "regressor__n_neighbors": 15,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 296.4095947265625,
+            "MAE": 16.0572159956736,
             "parameters": {
-                "regressor__alpha": 0.00031622776601683794,
-                "regressor__gamma": 0.001
+                "regressor__n_neighbors": 15,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 210.60043334960938,
+            "MAE": 17.194728469848634,
             "parameters": {
-                "regressor__alpha": 0.00031622776601683794,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 20,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 1005.66806640625,
+            "MAE": 16.03750794035522,
             "parameters": {
-                "regressor__alpha": 0.00031622776601683794,
-                "regressor__gamma": 0.1
+                "regressor__n_neighbors": 20,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 224.40309143066406,
+            "MAE": 18.16189308166504,
             "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 20,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 211.2791961669922,
+            "MAE": 16.8810861306207,
             "parameters": {
-                "regressor__alpha": 0.00030000000000000003,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 20,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 209.08919677734374,
+            "MAE": 12.915345191955566,
             "parameters": {
-                "regressor__alpha": 0.0005,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 1,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 209.08919677734374,
+            "MAE": 12.915344941058695,
             "parameters": {
-                "regressor__alpha": 0.0005,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 1,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 209.20789794921876,
+            "MAE": 13.97699203491211,
             "parameters": {
-                "regressor__alpha": 0.00075,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 1,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 209.692431640625,
+            "MAE": 13.976992161092605,
             "parameters": {
-                "regressor__alpha": 0.001,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 1,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 209.10146789550782,
+            "MAE": 13.226258659362793,
             "parameters": {
-                "regressor__alpha": 0.0004,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 3,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
             }
         },
         {
-            "MSE": 216.71888427734376,
+            "MAE": 12.76738817830199,
             "parameters": {
-                "regressor__alpha": 0.0032,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 3,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
             }
         },
         {
-            "MSE": 224.2991973876953,
+            "MAE": 14.164353942871093,
             "parameters": {
-                "regressor__alpha": 0.006,
-                "regressor__gamma": 0.01
+                "regressor__n_neighbors": 3,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
+            }
+        },
+        {
+            "MAE": 13.711047897594629,
+            "parameters": {
+                "regressor__n_neighbors": 3,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
+            }
+        },
+        {
+            "MAE": 13.774430656433106,
+            "parameters": {
+                "regressor__n_neighbors": 5,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
+            }
+        },
+        {
+            "MAE": 13.17111342581823,
+            "parameters": {
+                "regressor__n_neighbors": 5,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
+            }
+        },
+        {
+            "MAE": 14.759182739257813,
+            "parameters": {
+                "regressor__n_neighbors": 5,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
+            }
+        },
+        {
+            "MAE": 14.168557712980302,
+            "parameters": {
+                "regressor__n_neighbors": 5,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
+            }
+        },
+        {
+            "MAE": 14.306316566467284,
+            "parameters": {
+                "regressor__n_neighbors": 7,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
+            }
+        },
+        {
+            "MAE": 13.6023412760046,
+            "parameters": {
+                "regressor__n_neighbors": 7,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
+            }
+        },
+        {
+            "MAE": 15.312116432189942,
+            "parameters": {
+                "regressor__n_neighbors": 7,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
+            }
+        },
+        {
+            "MAE": 14.578269125255096,
+            "parameters": {
+                "regressor__n_neighbors": 7,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
+            }
+        },
+        {
+            "MAE": 15.102705764770509,
+            "parameters": {
+                "regressor__n_neighbors": 10,
+                "regressor__p": 1,
+                "regressor__weights": "uniform"
+            }
+        },
+        {
+            "MAE": 14.247351493568683,
+            "parameters": {
+                "regressor__n_neighbors": 10,
+                "regressor__p": 1,
+                "regressor__weights": "distance"
+            }
+        },
+        {
+            "MAE": 16.137469673156737,
+            "parameters": {
+                "regressor__n_neighbors": 10,
+                "regressor__p": 2,
+                "regressor__weights": "uniform"
+            }
+        },
+        {
+            "MAE": 15.212533880785028,
+            "parameters": {
+                "regressor__n_neighbors": 10,
+                "regressor__p": 2,
+                "regressor__weights": "distance"
             }
         }
     ],
     "Linear": [
         {
-            "MSE": 1450.9689697265626,
+            "MAE": 29.12580337524414,
             "parameters": {}
         },
         {
-            "MSE": 1450.9689697265626,
+            "MAE": 29.12580337524414,
             "parameters": {}
         }
     ],
-    "Ridge": [
+    "KernelRidge": [
         {
-            "MSE": 1450.970361328125,
+            "MAE": 10.066830444335938,
             "parameters": {
-                "regressor__alpha": 0.0
-            }
-        },
-        {
-            "MSE": 1450.9618408203125,
-            "parameters": {
-                "regressor__alpha": 1.0
-            }
-        },
-        {
-            "MSE": 1450.956884765625,
-            "parameters": {
-                "regressor__alpha": 2.0
-            }
-        },
-        {
-            "MSE": 1450.95498046875,
-            "parameters": {
-                "regressor__alpha": 3.0
-            }
-        },
-        {
-            "MSE": 1450.9562255859375,
-            "parameters": {
-                "regressor__alpha": 4.0
-            }
-        },
-        {
-            "MSE": 1450.96044921875,
-            "parameters": {
-                "regressor__alpha": 5.0
-            }
-        },
-        {
-            "MSE": 1450.968017578125,
-            "parameters": {
-                "regressor__alpha": 6.0
-            }
-        },
-        {
-            "MSE": 1450.9786865234375,
-            "parameters": {
-                "regressor__alpha": 7.0
-            }
-        },
-        {
-            "MSE": 1450.9917724609375,
-            "parameters": {
-                "regressor__alpha": 8.0
-            }
-        },
-        {
-            "MSE": 1451.0077880859376,
-            "parameters": {
-                "regressor__alpha": 9.0
-            }
-        },
-        {
-            "MSE": 1451.026611328125,
-            "parameters": {
-                "regressor__alpha": 10.0
+                "regressor__alpha": 0.0004,
+                "regressor__gamma": 0.01
             }
         }
     ],
     "SVR": [
         {
-            "MSE": 257.65643878188695,
+            "MAE": 10.149283737157585,
             "parameters": {
                 "regressor__C": 1000.0,
                 "regressor__epsilon": 1.0
             }
         },
         {
-            "MSE": 261.54690655803427,
+            "MAE": 14.713400086647246,
             "parameters": {
                 "regressor__C": 1000.0,
-                "regressor__epsilon": 10.0
+                "regressor__epsilon": 31.622776601683793
             }
         },
         {
-            "MSE": 1760.7018441996443,
+            "MAE": 263.31604834461416,
             "parameters": {
                 "regressor__C": 1000.0,
-                "regressor__epsilon": 100.0
+                "regressor__epsilon": 1000.0
             }
         },
         {
-            "MSE": 265.7167326417616,
+            "MAE": 9.803253284503016,
             "parameters": {
                 "regressor__C": 10000.0,
                 "regressor__epsilon": 1.0
             }
         },
         {
-            "MSE": 250.0294550762864,
+            "MAE": 14.69144146852849,
             "parameters": {
                 "regressor__C": 10000.0,
-                "regressor__epsilon": 10.0
+                "regressor__epsilon": 31.622776601683793
             }
         },
         {
-            "MSE": 1760.7018441996443,
+            "MAE": 263.31604834461416,
             "parameters": {
                 "regressor__C": 10000.0,
-                "regressor__epsilon": 100.0
+                "regressor__epsilon": 1000.0
             }
         },
         {
-            "MSE": 372.21916158947727,
+            "MAE": 10.758304721533474,
             "parameters": {
                 "regressor__C": 100000.0,
                 "regressor__epsilon": 1.0
             }
         },
         {
-            "MSE": 324.5006933460228,
+            "MAE": 14.8024704811149,
             "parameters": {
                 "regressor__C": 100000.0,
-                "regressor__epsilon": 10.0
+                "regressor__epsilon": 31.622776601683793
             }
         },
         {
-            "MSE": 1760.7018441996443,
+            "MAE": 263.31604834461416,
             "parameters": {
                 "regressor__C": 100000.0,
-                "regressor__epsilon": 100.0
+                "regressor__epsilon": 1000.0
             }
         }
     ]
