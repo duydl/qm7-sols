@@ -7,33 +7,50 @@ from sklearn.decomposition import PCA
 import numpy as np
 
 def get_models(model_names=None):
-    preprocessing_steps = [('scaler', StandardScaler())]
+    standard_scaling = [('scaler', StandardScaler())]
+    pca = [('pca', PCA(n_components=0.95))]
 
     all_models = {
         'Linear': {
-            'model': Pipeline(preprocessing_steps + [('regressor', LinearRegression())]),
+            'model': Pipeline(standard_scaling + [('regressor', LinearRegression())]),
             'params': {}
         },
         'Ridge': {
-            'model': Pipeline(preprocessing_steps + [('regressor', Ridge())]),
+            'model': Pipeline(standard_scaling + [('regressor', Ridge())]),
             'params': {
-                # 'regressor__alpha': np.logspace(-5, 3, 3),
-                'regressor__alpha': np.linspace(0, 0.2, 11)
+                'regressor__alpha': np.linspace(0, 10, 11)
+            }
+        },
+        'KernelRidge_NoScaling': {
+            'model': Pipeline(
+                # standard_scaling +
+                [('regressor', KernelRidge(kernel='rbf'))]),
+            'params': {
+                'regressor__alpha': np.logspace(-5, -3, 3),
+                'regressor__gamma': np.logspace(-5, -3, 3),
             }
         },
         'KernelRidge': {
-            'model': Pipeline(preprocessing_steps + [('regressor', KernelRidge())]),
+            'model': Pipeline(
+                standard_scaling +
+                [('regressor', KernelRidge(kernel='rbf'))]),
             'params': {
-                'regressor__alpha': np.logspace(-5, -3, 3),
-                'regressor__gamma': np.logspace(-5, -3, 3)
+                # 'regressor__alpha': np.logspace(-5, -3, 3),
+                # 'regressor__gamma': np.logspace(-5, -3, 3),
+                # 'regressor__alpha': np.logspace(-4.5, -3.5, 3),
+                # 'regressor__gamma': np.logspace(-3, -1, 3),
+                'regressor__alpha': np.linspace(0.0004, 0.0004, 1),
+                'regressor__gamma': np.linspace(0.01, 0.01, 1),
             }
         },
         'SVR': {
-            'model': Pipeline(preprocessing_steps + [('regressor', SVR(kernel='rbf'))]),
+            'model': Pipeline(
+                standard_scaling + 
+                [('regressor', SVR(kernel='rbf'))]),
             'params': {
-                'regressor__C': np.logspace(4, 4, 1),
-                'regressor__gamma': np.logspace(-5, -4, 2),
-                'regressor__epsilon': np.logspace(0, 1, 2)
+                'regressor__C': np.logspace(3, 5, 3),
+                'regressor__epsilon': np.logspace(0, 3, 3),
+                # 'regressor__gamma': np.logspace(-5, -4, 2),
             }
         }
     }

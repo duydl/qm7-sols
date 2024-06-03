@@ -1,0 +1,336 @@
+{
+    "KernelRidge": [
+        {
+            "MSE": 335.1009948730469,
+            "parameters": {
+                "regressor__alpha": 0.001,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MSE": 736.5814331054687,
+            "parameters": {
+                "regressor__alpha": 0.001,
+                "regressor__gamma": 0.0001
+            }
+        },
+        {
+            "MSE": 1406.7426513671876,
+            "parameters": {
+                "regressor__alpha": 0.001,
+                "regressor__gamma": 1e-05
+            }
+        },
+        {
+            "MSE": 287.2007629394531,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MSE": 1213.898095703125,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.0001
+            }
+        },
+        {
+            "MSE": 3255.7279052734375,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 1e-05
+            }
+        },
+        {
+            "MSE": 381.4468139648437,
+            "parameters": {
+                "regressor__alpha": 1e-05,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MSE": 1965.006201171875,
+            "parameters": {
+                "regressor__alpha": 1e-05,
+                "regressor__gamma": 0.0001
+            }
+        },
+        {
+            "MSE": 1672.5428466796875,
+            "parameters": {
+                "regressor__alpha": 1e-05,
+                "regressor__gamma": 1e-05
+            }
+        },
+        {
+            "MSE": 383.15228881835935,
+            "parameters": {
+                "regressor__alpha": 3.1622776601683795e-05,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MSE": 496.20196533203125,
+            "parameters": {
+                "regressor__alpha": 3.1622776601683795e-05,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 1115.649169921875,
+            "parameters": {
+                "regressor__alpha": 3.1622776601683795e-05,
+                "regressor__gamma": 0.1
+            }
+        },
+        {
+            "MSE": 287.2007629394531,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MSE": 224.40309143066406,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 1048.6200561523438,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.1
+            }
+        },
+        {
+            "MSE": 296.4095947265625,
+            "parameters": {
+                "regressor__alpha": 0.00031622776601683794,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MSE": 210.60043334960938,
+            "parameters": {
+                "regressor__alpha": 0.00031622776601683794,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 1005.66806640625,
+            "parameters": {
+                "regressor__alpha": 0.00031622776601683794,
+                "regressor__gamma": 0.1
+            }
+        },
+        {
+            "MSE": 224.40309143066406,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 211.2791961669922,
+            "parameters": {
+                "regressor__alpha": 0.00030000000000000003,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 209.08919677734374,
+            "parameters": {
+                "regressor__alpha": 0.0005,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 209.08919677734374,
+            "parameters": {
+                "regressor__alpha": 0.0005,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 209.20789794921876,
+            "parameters": {
+                "regressor__alpha": 0.00075,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 209.692431640625,
+            "parameters": {
+                "regressor__alpha": 0.001,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 209.10146789550782,
+            "parameters": {
+                "regressor__alpha": 0.0004,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 216.71888427734376,
+            "parameters": {
+                "regressor__alpha": 0.0032,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MSE": 224.2991973876953,
+            "parameters": {
+                "regressor__alpha": 0.006,
+                "regressor__gamma": 0.01
+            }
+        }
+    ],
+    "Linear": [
+        {
+            "MSE": 1450.9689697265626,
+            "parameters": {}
+        },
+        {
+            "MSE": 1450.9689697265626,
+            "parameters": {}
+        }
+    ],
+    "Ridge": [
+        {
+            "MSE": 1450.970361328125,
+            "parameters": {
+                "regressor__alpha": 0.0
+            }
+        },
+        {
+            "MSE": 1450.9618408203125,
+            "parameters": {
+                "regressor__alpha": 1.0
+            }
+        },
+        {
+            "MSE": 1450.956884765625,
+            "parameters": {
+                "regressor__alpha": 2.0
+            }
+        },
+        {
+            "MSE": 1450.95498046875,
+            "parameters": {
+                "regressor__alpha": 3.0
+            }
+        },
+        {
+            "MSE": 1450.9562255859375,
+            "parameters": {
+                "regressor__alpha": 4.0
+            }
+        },
+        {
+            "MSE": 1450.96044921875,
+            "parameters": {
+                "regressor__alpha": 5.0
+            }
+        },
+        {
+            "MSE": 1450.968017578125,
+            "parameters": {
+                "regressor__alpha": 6.0
+            }
+        },
+        {
+            "MSE": 1450.9786865234375,
+            "parameters": {
+                "regressor__alpha": 7.0
+            }
+        },
+        {
+            "MSE": 1450.9917724609375,
+            "parameters": {
+                "regressor__alpha": 8.0
+            }
+        },
+        {
+            "MSE": 1451.0077880859376,
+            "parameters": {
+                "regressor__alpha": 9.0
+            }
+        },
+        {
+            "MSE": 1451.026611328125,
+            "parameters": {
+                "regressor__alpha": 10.0
+            }
+        }
+    ],
+    "SVR": [
+        {
+            "MSE": 257.65643878188695,
+            "parameters": {
+                "regressor__C": 1000.0,
+                "regressor__epsilon": 1.0
+            }
+        },
+        {
+            "MSE": 261.54690655803427,
+            "parameters": {
+                "regressor__C": 1000.0,
+                "regressor__epsilon": 10.0
+            }
+        },
+        {
+            "MSE": 1760.7018441996443,
+            "parameters": {
+                "regressor__C": 1000.0,
+                "regressor__epsilon": 100.0
+            }
+        },
+        {
+            "MSE": 265.7167326417616,
+            "parameters": {
+                "regressor__C": 10000.0,
+                "regressor__epsilon": 1.0
+            }
+        },
+        {
+            "MSE": 250.0294550762864,
+            "parameters": {
+                "regressor__C": 10000.0,
+                "regressor__epsilon": 10.0
+            }
+        },
+        {
+            "MSE": 1760.7018441996443,
+            "parameters": {
+                "regressor__C": 10000.0,
+                "regressor__epsilon": 100.0
+            }
+        },
+        {
+            "MSE": 372.21916158947727,
+            "parameters": {
+                "regressor__C": 100000.0,
+                "regressor__epsilon": 1.0
+            }
+        },
+        {
+            "MSE": 324.5006933460228,
+            "parameters": {
+                "regressor__C": 100000.0,
+                "regressor__epsilon": 10.0
+            }
+        },
+        {
+            "MSE": 1760.7018441996443,
+            "parameters": {
+                "regressor__C": 100000.0,
+                "regressor__epsilon": 100.0
+            }
+        }
+    ]
+}
