@@ -80,7 +80,7 @@ def main(args):
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         monitor="train_mae",
         dirpath=args.log_dir + "/best_model",
-        filename=args.prep + "-MLP-{version}-{epoch:02d}-{val_loss:.2f}",
+        filename=args.prep + "-MLP-{version}-{epoch:02d}-{train_mae:.2f}-{val_mae:.2f}",
         save_top_k=1,
         verbose=False,
         mode="min",
@@ -115,7 +115,7 @@ if __name__ == "__main__":
     parser.add_argument('--version', type=int, default=0,
                         help='Model version (default: 0)')
     parser.add_argument('--learning_rate', type=float, default=0.01,
-                        help='Learning rate for the optimizer (default: 0.1)')
+                        help='Learning rate for the optimizer (default: 0.01)')
     parser.add_argument('--batch_size', type=int, default=32,
                         help='Batch size for training (default: 32)')
     parser.add_argument('--max_epochs', type=int, default=200,
