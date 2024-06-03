@@ -17,7 +17,8 @@ sys.path.append("../../utils")
 from data import get_cv_fold
 
 ## GNN Models
-# Could not pass custom attr to propagate: https://github.com/pyg-team/pytorch_geometric/issues/9059#issuecomment-2143304617
+# Example of passing edge_attr: https://pytorch-geometric.readthedocs.io/en/latest/_modules/torch_geometric/nn/conv/gmm_conv.html#GMMConv
+# Could not pass attr to propagate: https://github.com/pyg-team/pytorch_geometric/issues/9059#issuecomment-2143304617
 class CustomConvLayer(pyg_nn.MessagePassing):
     def __init__(self, in_channels, out_channels, pos_dim=3):
         super().__init__(aggr='add')
@@ -326,15 +327,15 @@ class GNNPL(pl.LightningModule):
         return self.model(data)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=0.01)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         lr_scheduler = {
             'scheduler': optim.lr_scheduler.ReduceLROnPlateau(
                 optimizer, 
                 mode='min', 
                 factor=0.25, 
-                patience=1
+                patience=3
                 ),
-            'monitor': 'val_loss', 
+            'monitor': 'train_mae', 
             'interval': 'epoch',
             'frequency': 1
         }
@@ -343,6 +344,7 @@ class GNNPL(pl.LightningModule):
     def training_step(self, data, batch_idx):
         logits = self(data)
         loss = self.criterion(logits.squeeze(), data.y)
+        self.log('train_mae', loss, on_step=False, on_epoch=True, prog_bar=False, batch_size=self.batch_size)
         
         rmse = self.rmse(logits.squeeze(), data.y)
         self.log('train_rmse', rmse, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
@@ -356,10 +358,18 @@ class GNNPL(pl.LightningModule):
         
         logits = self(data)
         loss = self.criterion(logits.squeeze(), data.y)
-        self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+        self.log('val_mae', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
 
         rmse = self.rmse(logits.squeeze(), data.y)
         self.log('val_rmse', rmse, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+        
+    def test_step(self, data, batch_idx):
+        logits = self(data)
+        loss = self.criterion(logits.squeeze(), data.y)
+        self.log('test_mae', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+
+        rmse = self.rmse(logits.squeeze(), data.y)
+        self.log('test_rmse', rmse, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
 
 class CustomProgressBar(pl.callbacks.ProgressBarBase):
     def get_metrics(self, trainer, model):

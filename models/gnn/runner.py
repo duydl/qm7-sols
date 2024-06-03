@@ -99,15 +99,15 @@ def main(args):
     summary_callback = pl.callbacks.ModelSummary(max_depth=8)
     pb_callback = pl.callbacks.RichProgressBar()
     early_stopping = pl.callbacks.EarlyStopping(
-        monitor='val_loss', 
-        patience=10,
+        monitor='train_mae', 
+        patience=12,
         verbose=True,
         mode='min'
     )
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
-        monitor='val_loss',
+        monitor='train_mae',
         dirpath=args.log_dir + '/best_model',
-        filename=args.model + '-{version}-{epoch:02d}-{val_loss:.2f}',
+        filename=args.model + '-{version}-{epoch:02d}-{train_mae:.2f}-{val_mae:.2f}',
         save_top_k=1,
         mode='min',
     )
@@ -119,7 +119,7 @@ def main(args):
                  ]
     
     trainer = pl.Trainer(
-        max_epochs=args.max_epochs,
+        max_epochs=args.max_epochs+1,
         accelerator='gpu' if str(device).startswith('cuda') else 'cpu',
         callbacks=callbacks,
         logger=loggers
@@ -127,22 +127,22 @@ def main(args):
 
     # Train model
     trainer.fit(model_pl, train_dataloaders=train_loader, val_dataloaders=val_loader)
+    test_result = trainer.test(dataloaders=val_loader)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a GNN model on the QM7 dataset.")
     parser.add_argument('--model', type=str, default='CustomGNN', 
-                        # choices=['CustomGNN', 'GATNet'],
                         help='The model to use for training (default: CustomGNN)')
-    parser.add_argument('-fold', type=int, default=0,
+    parser.add_argument('--fold', type=int, default=0,
                         help='Fold (default: 0)')
     parser.add_argument('--version', type=int, default=0,
                         help='Model version (default: 0)')
-    parser.add_argument('--learning_rate', type=float, default=0.1,
-                        help='Learning rate for the optimizer (default: 0.1)')
+    parser.add_argument('--learning_rate', type=float, default=0.01,
+                        help='Learning rate for the optimizer (default: 0.01)')
     parser.add_argument('--batch_size', type=int, default=32,
                         help='Batch size for training (default: 32)')
-    parser.add_argument('--max_epochs', type=int, default=500,
-                        help='Maximum number of epochs for training (default: 1000)')
+    parser.add_argument('--max_epochs', type=int, default=200,
+                        help='Maximum number of epochs for training (default: 200)')
     parser.add_argument('--log_dir', type=str, default='logs',
                         help='Directory to save logs (default: logs)')
     parser.add_argument('--mlflow_uri', type=str, default=os.path.expanduser('~/mlruns'),
