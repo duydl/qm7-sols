@@ -34,7 +34,36 @@ class Input_SortedEigen(nn.Module):
     
     def forward(self, coulomb_matrices):
         return (self.get_sorted_eigenvals(coulomb_matrices) - self.mean) / self.std
+
+
+class Input_SortedCM(nn.Module):
+    def __init__(self, dataset):
+        super(Input_SortedCM, self).__init__()
         
+        self.triuind = (torch.arange(23)[:, None] <= torch.arange(23)[None, :]).flatten()
+        self.device = dataset.device
+        
+        realized_dataset = self.realize(dataset)
+        
+        self.output_size = realized_dataset.shape[1]
+        self.mean = realized_dataset.mean(dim=0)
+        self.std = (realized_dataset - self.mean).std().item()
+
+    def realize(self, X):
+        def _realize_(x):
+            inds = torch.argsort(-(x**2).sum(dim=0)**0.5 + torch.normal(0, self.noise, size=(x.size(0),)))
+            x = x[inds, :][:, inds] * 1
+            x = x.flatten()[self.triuind]
+            return x
+        return torch.stack([_realize_(z) for z in X])
+    
+    def forward(self, X):
+        X_realized = self.realize(X)
+        X_normalized = (X_realized - self.mean) / self.std
+
+        return X_normalized
+
+
 class Input_RandomSortedCM(nn.Module):
     def __init__(self, dataset, step=1.0, noise=1.0):
         super(Input_RandomSortedCM, self).__init__()
@@ -43,17 +72,15 @@ class Input_RandomSortedCM(nn.Module):
         self.triuind = (torch.arange(23)[:, None] <= torch.arange(23)[None, :]).flatten()
         self.device = dataset.device
         self.max = torch.Tensor([0.0]).to(self.device)
-        for _ in range(10): self.max = torch.maximum(self.max,self.realize(dataset).max(dim=0)[0])
-        print("self max" ,self.max,self.max.shape)
+        for _ in range(10): 
+            self.max = torch.maximum(self.max,self.realize(dataset).max(dim=0)[0])
         
         realized_dataset_ = self.realize(dataset)
-        print("realized_dataset", realized_dataset_.shape, realized_dataset_)
         realized_dataset = self.expand(realized_dataset_)
-        print("realized_dataset", realized_dataset.shape, realized_dataset)
+        
         self.output_size = realized_dataset.shape[1]
         self.mean = realized_dataset.mean(dim=0)
         self.std = (realized_dataset - self.mean).std().item()
-        print("self.std",self.std)
 
     def realize(self, X):
         def _realize_(x):
@@ -64,13 +91,11 @@ class Input_RandomSortedCM(nn.Module):
         return torch.stack([_realize_(z) for z in X])
 
     def expand(self, X):
-        Xexp = []
-        # print("X.shape[1]", X.shape[1])
+        X_exp = []
         for i in range(X.shape[1]):
             for k in torch.arange(0, self.max[i], self.step):
-                Xexp.append(torch.tanh((X[:, i] - k) / self.step))
-        # print(len(Xexp))
-        return torch.stack(Xexp).T
+                X_exp.append(torch.tanh((X[:, i] - k) / self.step))
+        return torch.stack(X_exp).T
 
     def forward(self, X):
         X_realized = self.realize(X)

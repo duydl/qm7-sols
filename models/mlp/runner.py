@@ -32,7 +32,7 @@ def load_data(filepath, fold=None):
 
         return X_train, y_train, X_test, y_test
 
-def create_data_loader(X, y, batch_size=25):
+def create_data_loader(X, y, batch_size=32):
     X_tensor = torch.from_numpy(X.copy())
     y_tensor = torch.from_numpy(y.copy()).unsqueeze(-1)
     
