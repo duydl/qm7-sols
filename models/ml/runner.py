@@ -21,8 +21,10 @@ def load_data(filepath, feature="eigenspectrum"):
     y = atom_es = dataset["T"].squeeze()
     coulomb_matrices = dataset["X"]
     
-    test_fold = np.concatenate([np.full(len(dataset["P"][i]), i) for i in range(5)])
-    print(test_fold)
+    test_fold = np.empty(coulomb_matrices.shape[0], dtype=int)
+    for i in range(5):
+        test_fold[dataset["P"][i].flatten()] = i
+
     if feature == "eigenspectrum":
         X = get_sorted_eigenvals(coulomb_matrices)
         return X, y, test_fold
@@ -65,7 +67,7 @@ def expand_coulomb_matrices(coulomb_matrices, atom_es, noise_level=1.0, n_expand
 
     return np.array(random_coulomb_matrices), np.array(new_atom_es)
 
-def evaluate_models(X, y, , test_fold, model_names=None, verbose=2):
+def evaluate_models(X, y, test_fold, model_names=None, verbose=2):
     models = get_models(model_names=model_names)
     results_file_path = "logs/grid_search_results.json"
     
@@ -103,7 +105,7 @@ def evaluate_models(X, y, , test_fold, model_names=None, verbose=2):
             })
        
         best_model, best_score = grid_check.best_estimator_, -grid_check.best_score_
-        print(f"Best model for {model_name}: {best_model}, Best MSE: {best_score}")
+        print(f"Best model for {model_name}: {best_model}, Best MAE: {best_score}")
     
     with open("logs/grid_search_results.json", "w") as file:
         json.dump(results, file, indent=4)
