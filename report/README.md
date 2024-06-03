@@ -136,11 +136,12 @@ where \( \phi(x) \) is the feature mapping, \( \epsilon \) is the margin of tole
 
 ### Performance Comparison
 
-| Model                   | Mean Square Error (MSE) |
+| Model                   | Mean Absolute Error (MAE) |
 |-------------------------|---------------------------|
-| Linear Regression       | 1400                      |
-| Kernel Ridge Regression | 209                      |
-| Support Vector Regression | 250                    |
+| Linear Regression       | 29.08                      |
+| K-Neighbors Regressor(n_neighbors=3, p=1, weights='distance')       | 12.67                      |
+| Kernel Ridge Regression (alpha=0.0004, gamma=0.01, kernel='rbf') | 10.07                      |
+| Support Vector Regression (C=10000.0, epsilon=1.0) | 9.80                    |
 
 
 ## Multi-Layer Perceptron
@@ -214,7 +215,13 @@ We note that for GNN the number of atom is not required to be uniform. Thus we c
 
 ### DimeNet
 
+DimeNetPlusPlus Model introduced in [3]. 
 
+Test MAE:
+DimeNet: 2.0417
+
+Test RMSE :
+DimeNet: 3.5544
 
 ## References
 
