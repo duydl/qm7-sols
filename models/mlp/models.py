@@ -5,18 +5,6 @@ import torch.nn.functional as F
 
 import pytorch_lightning as pl
 
-from torchmetrics import MeanAbsoluteError, MeanSquaredError
-
-import logging
-
-# Configure logging
-logging.basicConfig(
-    filename='debug.log', 
-    filemode='a', 
-    format='%(asctime)s - %(levelname)s - %(message)s', 
-    level=logging.DEBUG
-)
-
 class Input_SortedEigen(nn.Module):
     def __init__(self, dataset):
         super(Input_SortedEigen, self).__init__()
@@ -28,7 +16,7 @@ class Input_SortedEigen(nn.Module):
     def get_sorted_eigenvals(self, coulomb_matrices):
         eigenvals = torch.linalg.eigvalsh(coulomb_matrices)
         
-        # Sort the eigenvalues by their absolute values in descending order
+        # Sort by absolute values in descending order
         sorted_eigenvals = torch.sort(torch.abs(eigenvals), dim=1, descending=True).values
         return sorted_eigenvals
     
@@ -51,7 +39,7 @@ class Input_SortedCM(nn.Module):
 
     def realize(self, X):
         def _realize_(x):
-            inds = torch.argsort(-(x**2).sum(dim=0)**0.5 + torch.normal(0, self.noise, size=(x.size(0),)))
+            inds = torch.argsort(-(x**2).sum(dim=0)**0.5)
             x = x[inds, :][:, inds] * 1
             x = x.flatten()[self.triuind]
             return x
@@ -155,6 +143,16 @@ class MLP(nn.Module):
         return self.postprocess(out)
 
 
+## PT Lightning Model
+class RMSE(pl.LightningModule):
+    def __init__(self):
+        super(RMSE, self).__init__()
+
+    def forward(self, y_pred, y_true):
+        mse = F.mse_loss(y_pred, y_true, reduction='mean')
+        rmse = torch.sqrt(mse)
+        return rmse
+    
 class ModelPL(pl.LightningModule):
     def __init__(self, model, learning_rate=0.001, batch_size=64):
         super().__init__()
@@ -164,67 +162,55 @@ class ModelPL(pl.LightningModule):
         
         self.criterion = torch.nn.L1Loss()
         
-        # Regression metrics
-        # self.train_mae = MeanAbsoluteError()
-        # self.val_mae = MeanAbsoluteError()
-        # self.test_mae = MeanAbsoluteError()
+        self.rmse = RMSE()
         
-        # self.train_mse = MeanSquaredError()
-        # self.val_mse = MeanSquaredError()
-        # self.test_mse = MeanSquaredError()
-
     def forward(self, data):
         return self.model(data)
     
     def configure_optimizers(self):
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        optimizer = torch.optim.Adam(self.parameters(), lr=0.01)
         lr_scheduler = {
             'scheduler': optim.lr_scheduler.ReduceLROnPlateau(
                 optimizer, 
                 mode='min', 
                 factor=0.25, 
-                patience=5),
-            'monitor': 'val_loss', 
+                patience=3
+                ),
+            'monitor': 'train_mae', 
             'interval': 'epoch',
             'frequency': 1
         }
-        # def lr_lambda(epoch):
-        #     if epoch > 12500:
-        #         return 0.01
-        #     elif epoch > 2500:
-        #         return 0.005
-        #     elif epoch > 500:
-        #         return 0.0025
-        #     else:
-        #         return 0.001
-        # lr_scheduler = optim.lr_scheduler.LambdaLR(optimizer, lr_lambda)
-
-        return {'optimizer': optimizer, 'lr_scheduler': lr_scheduler}
-        # return []
+        return [optimizer], [lr_scheduler]
 
     def training_step(self, data, batch_idx):
         inputs, targets = data[0], data[1]
         outputs = self(inputs)
         loss = self.criterion(outputs, targets)
-        lr = self.optimizers().param_groups[0]['lr']
-        self.log('learning_rate', lr, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
-        self.log('train_loss', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+        self.log('train_mae', loss, on_step=False, on_epoch=True, prog_bar=False, batch_size=self.batch_size)
         
-        # self.train_mae(outputs, targets)
-        # self.log("train_mae", self.train_mae, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
-        
-        # self.train_mse(outputs, targets)
-        # self.log('train_mse', self.train_mse, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+        rmse = self.rmse(outputs, targets)
+        self.log('train_rmse', rmse, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
         
         return loss
 
     def validation_step(self, data, batch_idx):
+                
+        lr = self.optimizers().param_groups[0]['lr']
+        self.log('lr', float(f"{lr:.5e}"), on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+        
         inputs, targets = data[0], data[1]
         outputs = self(inputs)
         loss = self.criterion(outputs, targets)
-        self.log('val_loss', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
-        
-        # self.val_mse(outputs, targets)
-        # self.log('val_mse', self.val_mse, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
-        
-        return loss
+        self.log('val_mae', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+
+        rmse = self.rmse(outputs, targets)
+        self.log('val_rmse', rmse, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+
+    def test_step(self, data, batch_idx):
+        inputs, targets = data[0], data[1]
+        outputs = self(inputs)
+        loss = self.criterion(outputs, targets)
+        self.log('test_mae', loss, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+
+        rmse = self.rmse(outputs, targets)
+        self.log('test_rmse', rmse, on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
