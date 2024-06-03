@@ -10,12 +10,10 @@ def load_data(filepath, feature="eigenspectrum"):
     coulomb_matrices = dataset["X"]
     
     if feature == "eigenspectrum":
-        # Compute eigenvalues of the matrices and sort them by magnitude in descending order
         X = get_sorted_eigenvals(coulomb_matrices)
         return X, y
 
     elif feature == "sorted_coulomb":
-        # Sort Coulomb matrices by the norm-2 of their columns in descending order
         X = sort_coulomb_matrics(coulomb_matrices)
         return X, y
     
