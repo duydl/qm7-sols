@@ -115,7 +115,7 @@ def main(args):
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         monitor='train_mae',
         dirpath=args.log_dir + '/best_model',
-        filename=args.model + '-{version}-{epoch:02d}-{train_mae:.2f}-{val_mae:.2f}',
+        filename=f"{args.model}_f{args.fold}_{args.version}"+'-{epoch:02d}-{train_mae:.2f}-{val_mae:.2f}',
         save_top_k=1,
         mode='min',
     )
