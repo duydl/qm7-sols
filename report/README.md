@@ -136,13 +136,25 @@ where \( \phi(x) \) is the feature mapping, \( \epsilon \) is the margin of tole
 
 ### Performance Comparison
 
+**Sorted Eigenvalues**
+
 | Model                   | Mean Absolute Error (MAE) |
 |-------------------------|---------------------------|
 | Linear Regression       | 29.08                      |
 | K-Neighbors Regressor(n_neighbors=3, p=1, weights='distance')       | 12.67                      |
 | Kernel Ridge Regression (alpha=0.0004, gamma=0.01, kernel='rbf') | 10.07                      |
-| Support Vector Regression (C=10000.0, epsilon=1.0) | 9.80                    |
+| Support Vector Regression (C=1000.0, epsilon=1.0) | 9.98                    |
 
+**Sorted Coulomb Matrices**
+
+| Model                   | Mean Absolute Error (MAE) |
+|-------------------------|---------------------------|
+| Ridge Regression (alpha=50.0)      | 32.54                      |
+| K-Neighbors Regressor (n_neighbors=3, p=1, weights='distance')       | 22.48                      |
+| KernelRidge (alpha=0.001, gamma=0.0001, kernel='rbf') | 21.07                      |
+| Support Vector Regression (C=1000.0, epsilon=1.0) | 21.34                    |
+
+All models preprocess input with `StandardScaler()`. 
 
 ## Multi-Layer Perceptron
 
@@ -185,7 +197,7 @@ Due to time constraint, we are only able to report result on training of fold 0 
 | MLP_sorted_cm          | 8.7802   | 12.5981   |
 | MLP_sorted_eigen       | 10.1371  | 13.8153   |
 
-The results generally agrees with result of [2], with sourted eigenvalues approach and sorted coulomb matrices achieved slightly better result but randomly sorted coulmb matrices had sligtly worse. We also note that our training process places less effort on tuning learning rate compared to [2].  
+The results generally agrees with result of [2], with sourted eigenvalues approach and sorted coulomb matrices achieved slightly better result but randomly sorted coulmb matrices had sligtly worse. We also note that our training process places less effort on tuning learning rate compared to [2]. 
 
 ### Graph Neural Network
 
@@ -217,6 +229,8 @@ We note that for GNN the number of atom is not required to be uniform. Thus we c
 
 DimeNetPlusPlus Model introduced in [3]. 
 
+![alt text](image-5.png)
+
 Test MAE:
 DimeNet: 2.0417
 
@@ -227,4 +241,5 @@ DimeNet: 3.5544
 
 [1] M. Rupp, A. Tkatchenko, K.-R. Müller, and O. A. Von Lilienfeld, “Fast and Accurate Modeling of Molecular Atomization Energies with Machine Learning,” Phys. Rev. Lett., vol. 108, no. 5, p. 058301, Jan. 2012, doi: 10.1103/PhysRevLett.108.058301.
 [2] G. Montavon et al., “Learning Invariant Representations of Molecules for Atomization Energy Prediction,” in Advances in Neural Information Processing Systems, Curran Associates, Inc., 2012. Accessed: Jun. 03, 2024. [Online]. Available: https://proceedings.neurips.cc/paper/2012/hash/115f89503138416a242f40fb7d7f338e-Abstract.html
-[3] J. Gasteiger, S. Giri, J. T. Margraf, and S. Günnemann, “Fast and Uncertainty-Aware Directional Message Passing for Non-Equilibrium Molecules.” arXiv, Apr. 05, 2022. doi: 10.48550/arXiv.2011.14115.
+[3] J. Gasteiger, J. Groß, and S. Günnemann, “Directional Message Passing for Molecular Graphs.” arXiv, Apr. 05, 2022. doi: 10.48550/arXiv.2003.03123.
+[4] J. Gasteiger, S. Giri, J. T. Margraf, and S. Günnemann, “Fast and Uncertainty-Aware Directional Message Passing for Non-Equilibrium Molecules.” arXiv, Apr. 05, 2022. doi: 10.48550/arXiv.2011.14115.
