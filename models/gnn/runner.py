@@ -7,7 +7,7 @@ import networkx as nx
 import pytorch_lightning as pl
 import matplotlib.pyplot as plt
 from torch_geometric.data import DataLoader as pyg_loader
-from models import QM7, CustomGNN, GNNPL, GATNet, KNNGroupWithPos, ConcatPosToX, CustomProgressBar, CoulombGroupTransform, PruneZeroCharge, DimeNetModel
+from models import *
 
 def create_dataloaders(train_dataset, val_dataset, batch_size=32):
     train_loader = pyg_loader(train_dataset, batch_size=batch_size, num_workers=12)
@@ -24,33 +24,41 @@ def main(args):
     data_val = QM7(data_path, fold=args.fold, train=False)
     
     # Create model
-    if args.model == "CustomGNN":
+    if args.model == "CustomGNN_CoulombGroup":
         # Process dataset
         data_train.transform = T.Compose([CoulombGroupTransform(k=10)])
         data_val.transform = T.Compose([CoulombGroupTransform(k=10)])
         node_features = data_train[0].x.shape[1]
+        # edge_attr not yet supported
         # edge_dim = data_train[0].edge_attr.shape[1]
         edge_dim = 0
-        model = CustomGNN(node_features=node_features, pos_dim=3, edge_dim=edge_dim)
+        model = CustomGNN_1(node_features=node_features, edge_dim=edge_dim)
         
-    if args.model == "CustomGNN_KNNGroup":
+    elif args.model == "CustomGNN_1":
         # Process dataset
-        data_train.transform = T.Compose([KNNGroupWithPos(k=10)])
-        data_val.transform = T.Compose([KNNGroupWithPos(k=10)])
+        data_train.transform = T.Compose([PruneZeroCharge(), KNNGroupWithPos(k=5)])
+        data_val.transform = T.Compose([PruneZeroCharge(), KNNGroupWithPos(k=5)])
         node_features = data_train[0].x.shape[1]
-        model = CustomGNN(node_features=node_features, pos_dim=3)
+        model = CustomGNN_1(node_features=node_features)
         
-    elif args.model == "CustomGNN_PruneZero":
+    elif args.model == "CustomGNN_2":
         # Process dataset
-        data_train.transform = T.Compose([PruneZeroCharge(), CoulombGroupTransform(k=10)])
-        data_val.transform = T.Compose([PruneZeroCharge(), CoulombGroupTransform(k=10)])
+        data_train.transform = T.Compose([PruneZeroCharge(), KNNGroupWithPos(k=5)])
+        data_val.transform = T.Compose([PruneZeroCharge(), KNNGroupWithPos(k=5)])
         node_features = data_train[0].x.shape[1]
-        model = CustomGNN(node_features=node_features, pos_dim=3)
+        model = CustomGNN_2(node_features=node_features)
+        
+    elif args.model == "CustomGNN_3":
+        # Process dataset
+        data_train.transform = T.Compose([PruneZeroCharge(), KNNGroupWithPos(k=5)])
+        data_val.transform = T.Compose([PruneZeroCharge(), KNNGroupWithPos(k=5)])
+        node_features = data_train[0].x.shape[1]
+        model = CustomGNN_3(node_features=node_features)
         
     elif args.model == "GATNet":
         # Process dataset
-        data_train.transform = T.Compose([ConcatPosToX(), CoulombGroupTransform(k=10)])
-        data_val.transform = T.Compose([ConcatPosToX(), CoulombGroupTransform(k=10)])
+        data_train.transform = T.Compose([ConcatPosToX(), KNNGroupWithPos(k=10)])
+        data_val.transform = T.Compose([ConcatPosToX(), KNNGroupWithPos(k=10)])
         node_features = data_train[0].x.shape[1]
         model = GATNet(node_features=node_features)
         
@@ -101,7 +109,7 @@ def main(args):
     early_stopping = pl.callbacks.EarlyStopping(
         monitor='train_mae', 
         patience=12,
-        verbose=True,
+        verbose=False,
         mode='min'
     )
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
@@ -113,7 +121,7 @@ def main(args):
     )
     
     callbacks = [summary_callback, 
-                 pb_callback,
+                #  pb_callback,
                  early_stopping,
                  checkpoint_callback,
                  ]
@@ -141,8 +149,8 @@ if __name__ == "__main__":
                         help='Learning rate for the optimizer (default: 0.01)')
     parser.add_argument('--batch_size', type=int, default=32,
                         help='Batch size for training (default: 32)')
-    parser.add_argument('--max_epochs', type=int, default=200,
-                        help='Maximum number of epochs for training (default: 200)')
+    parser.add_argument('--max_epochs', type=int, default=100,
+                        help='Maximum number of epochs for training (default: 100)')
     parser.add_argument('--log_dir', type=str, default='logs',
                         help='Directory to save logs (default: logs)')
     parser.add_argument('--mlflow_uri', type=str, default=os.path.expanduser('~/mlruns'),

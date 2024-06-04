@@ -25,9 +25,9 @@ class CustomConvLayer(pyg_nn.MessagePassing):
         self.in_channels = in_channels
         self.mlp = nn.Sequential(
             nn.Linear(in_channels * 2 + 
-                      pos_dim, 
+                    #   pos_dim, 
                     #   pos_dim * 2, 
-                    #   1,
+                      1,
                       out_channels),
             nn.ReLU(),
             nn.Linear(out_channels, out_channels),
@@ -39,12 +39,11 @@ class CustomConvLayer(pyg_nn.MessagePassing):
 
     def message(self, x_j, x_i, pos_j, pos_i):
         
-        edge_feat = torch.cat([x_i, x_j, pos_j - pos_i], dim=-1) # thus 2*in_channels + pos_dim
+        distance = torch.norm(pos_j - pos_i, dim=-1, keepdim=True)
+        # edge_feat = torch.cat([x_i, x_j, pos_j - pos_i], dim=-1) # thus 2*in_channels + pos_dim
 
-        # edge_feat = torch.cat([h_i, h_j, pos_i, pos_j], dim=-1)
-        
-        # distance = torch.norm(pos_j - pos_i, dim=-1, keepdim=True)
-        # edge_feat = torch.cat([h_i, h_j, distance], dim=-1)
+        # edge_feat = torch.cat([x_i, x_j, pos_i, pos_j], dim=-1)
+        edge_feat = torch.cat([x_i, x_j, distance], dim=-1)
         return self.mlp(edge_feat)
     
 class CustomConvLayer(pyg_nn.MessagePassing):
@@ -79,17 +78,19 @@ class CustomConvLayer(pyg_nn.MessagePassing):
         #     edge_feat = torch.cat([x_i, x_j, pos_j - pos_i], dim=-1)
         # else:
         #     edge_feat = torch.cat([x_i, x_j, pos_j - pos_i, edge_attr], dim=-1)
-        edge_feat = torch.cat([x_i, x_j, pos_j - pos_i], dim=-1)
+        if self.pos_dim == 1:
+            distance = torch.norm(pos_j - pos_i, dim=-1, keepdim=True)
+            edge_feat = torch.cat([x_i, x_j, distance], dim=-1)
+        else:
+            edge_feat = torch.cat([x_i, x_j, pos_j - pos_i], dim=-1)
         return self.mlp(edge_feat)
 
-class CustomGNN(nn.Module):
-    def __init__(self, node_features=1, pos_dim=3, edge_dim=0, hidden_dim=64, output_dim=1):
+class CustomGNN_1(nn.Module):
+    def __init__(self, node_features=1, pos_dim=3, edge_dim=0, hidden_dim=128, output_dim=1):
         super().__init__()
 
         self.conv1 = CustomConvLayer(node_features, hidden_dim, pos_dim=pos_dim, edge_dim=edge_dim)
-        self.bn1 = nn.BatchNorm1d(hidden_dim)
         self.conv2 = CustomConvLayer(hidden_dim, hidden_dim, pos_dim=pos_dim, edge_dim=edge_dim)
-        self.bn2 = nn.BatchNorm1d(hidden_dim)
 
         self.predictor = pyg_nn.MLP([hidden_dim, hidden_dim, output_dim], bias=[False, True])
 
@@ -100,16 +101,70 @@ class CustomGNN(nn.Module):
         x = self.conv1(edge_index=edge_index, x=x, pos=pos, 
                     #    edge_attr=edge_attr
                        )
-        x = self.bn1(x)
         x = x.relu()
         
         # Second ConvLayer layer
         x = self.conv2(edge_index, x=x, pos=pos, 
                     #    edge_attr=edge_attr
                        )
-        x = self.bn2(x)
         x = x.relu()
         
+        # Global Pooling:
+        x = pyg_nn.global_add_pool(x, batch)
+        
+        # Predictor
+        return self.predictor(x)
+
+class CustomGNN_2(nn.Module):
+    def __init__(self, node_features=1, pos_dim=3, edge_dim=0, hidden_dim=32, output_dim=1, num_filters=5):
+        super().__init__()
+
+        self.num_filters = num_filters
+
+        self.conv = nn.ModuleList([CustomConvLayer(node_features, hidden_dim, pos_dim=pos_dim, edge_dim=edge_dim) for _ in range(num_filters)])
+
+        self.predictor = pyg_nn.MLP([hidden_dim * num_filters, hidden_dim, output_dim], bias=[False, True])
+
+    def forward(self, data):
+        x, pos, edge_index, edge_attr, batch = data.x, data.pos, data.edge_index, data.edge_attr, data.batch
+        
+        # ConvLayer layers
+        x_list = [conv(edge_index=edge_index, x=x, pos=pos) for conv in self.conv]
+        x = torch.cat(x_list, dim=-1)
+        
+        # Global Pooling:
+        x = pyg_nn.global_add_pool(x, batch)
+        
+        # Predictor
+        return self.predictor(x)
+
+class CustomGNN_3(nn.Module):
+    def __init__(self, node_features=1, pos_dim=3, edge_dim=0, hidden_dim=32, output_dim=1, interaction_nums=5):
+        super().__init__()
+        self.interaction_nums = interaction_nums
+        self.conv1 = CustomConvLayer(node_features, hidden_dim, pos_dim=pos_dim, edge_dim=edge_dim)
+        self.conv = CustomConvLayer(hidden_dim, hidden_dim, pos_dim=1, edge_dim=edge_dim)
+
+        self.predictor = pyg_nn.MLP([hidden_dim, hidden_dim, output_dim], bias=[False, True])
+
+    def forward(self, data):
+        x, pos, edge_index, edge_attr, batch = data.x, data.pos, data.edge_index, data.edge_attr, data.batch
+        
+        out = []
+        # First ConvLayer layer
+        x = self.conv1(edge_index=edge_index, x=x, pos=pos, 
+                    #    edge_attr=edge_attr
+                       )
+        out.append(x.sigmoid())
+        
+        for i in range(self.interaction_nums):
+            x = self.conv(edge_index, x=x, pos=pos, 
+                        #    edge_attr=edge_attr
+                        )
+            out.append(x.sigmoid())
+        
+        out_tensor = torch.stack(out, dim=0)
+        x = torch.mean(out_tensor, dim=0)
         # Global Pooling:
         x = pyg_nn.global_add_pool(x, batch)
         
@@ -197,11 +252,11 @@ class CoulombGroupTransform(T.BaseTransform):
         force_matrix[col, row] = coulomb_force
 
         # Find the k-largest forces
-        _, indices = force_matrix.topk(self.k, dim=1)
+        _, indices = force_matrix.topk(min(num_nodes, self.k), dim=1)
 
         # Create edge_index
         edge_index = torch.cat([torch.arange(num_nodes)
-                                .repeat_interleave(self.k)
+                                .repeat_interleave(min(num_nodes, self.k))
                                 .view(1, -1), indices.view(1, -1)], dim=0)
 
         data.edge_index = edge_index
@@ -227,7 +282,6 @@ class PruneZeroCharge(T.BaseTransform):
 class QM7(pyg_data.InMemoryDataset):
     def __init__(self, root, fold=0, train=True,
                  transform=None, pre_transform=None, pre_filter=None, force_reload=True):
-        
         self.train = train
         self.fold = fold
         super().__init__(root, transform, pre_transform)
@@ -281,7 +335,7 @@ class QM7(pyg_data.InMemoryDataset):
             # z_one_hot = z_one_hot.float()
             # x = z_one_hot
             
-            x = torch.concat([z.unsqueeze(-1), z_one_hot], dim=-1)
+            x = torch.concat([F.normalize(z.float()).unsqueeze(-1), z_one_hot], dim=-1)
             
             pos = torch.tensor(dataset["R"], dtype=torch.float)
             
@@ -328,13 +382,17 @@ class GNNPL(pl.LightningModule):
     
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
+        
+        linear_scheduler = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: max((1 - epoch / 50), 0.01))
+
+        plataeau_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer, 
+            mode='min', 
+            factor=0.1, 
+            patience=2)
+    
         lr_scheduler = {
-            'scheduler': optim.lr_scheduler.ReduceLROnPlateau(
-                optimizer, 
-                mode='min', 
-                factor=0.25, 
-                patience=3
-                ),
+            'scheduler': linear_scheduler,
             'monitor': 'train_mae', 
             'interval': 'epoch',
             'frequency': 1
