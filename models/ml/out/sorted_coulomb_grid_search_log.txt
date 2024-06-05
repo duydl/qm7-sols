@@ -1,16 +1,8 @@
-Best model for Linear: Pipeline(steps=[('scaler', StandardScaler()),
-                ('regressor', LinearRegression())]), Best MAE: 4511.182748413086
-Best model for Ridge: Pipeline(steps=[('scaler', StandardScaler()), ('regressor', Ridge(alpha=50.0))]), Best MAE: 32.54308662414551
+Best model for Ridge: Pipeline(steps=[('scaler', StandardScaler()), ('regressor', Ridge(alpha=30.0))]), Best MAE: 20.96490135192871
 Best model for KNN: Pipeline(steps=[('scaler', StandardScaler()),
                 ('regressor',
-                 KNeighborsRegressor(n_neighbors=3, p=1, weights='distance'))]), Best MAE: 22.48178661277077
-Best model for Linear: Pipeline(steps=[('scaler', StandardScaler()),
-                ('regressor', LinearRegression())]), Best MAE: 4511.182748413086
-Best model for Ridge: Pipeline(steps=[('scaler', StandardScaler()), ('regressor', Ridge(alpha=50.0))]), Best MAE: 32.54308662414551
+                 KNeighborsRegressor(n_neighbors=3, p=1, weights='distance'))]), Best MAE: 20.56356072194837
+Best model for SVR: Pipeline(steps=[('scaler', StandardScaler()), ('regressor', SVR(C=1000.0))]), Best MAE: 15.706183865541027
 Best model for KernelRidge: Pipeline(steps=[('scaler', StandardScaler()),
                 ('regressor',
-                 KernelRidge(alpha=0.001, gamma=0.0001, kernel='rbf'))]), Best MAE: 21.070611190795898
-Best model for KernelRidge: Pipeline(steps=[('scaler', StandardScaler()),
-                ('regressor',
-                 KernelRidge(alpha=0.001, gamma=0.0001, kernel='rbf'))]), Best MAE: 21.070611190795898
-Best model for SVR: Pipeline(steps=[('scaler', StandardScaler()), ('regressor', SVR(C=1000.0))]), Best MAE: 21.341979264048035
+                 KernelRidge(alpha=0.0001, gamma=0.0001, kernel='rbf'))]), Best MAE: 15.027981185913086

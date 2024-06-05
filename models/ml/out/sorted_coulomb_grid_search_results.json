@@ -1,73 +1,67 @@
 {
-    "Linear": [
-        {
-            "MAE": 4511.182748413086,
-            "parameters": {}
-        }
-    ],
     "Ridge": [
         {
-            "MAE": 32.57368431091309,
+            "MAE": 20.96490135192871,
             "parameters": {
                 "regressor__alpha": 30.0
             }
         },
         {
-            "MAE": 32.56986541748047,
+            "MAE": 20.98590431213379,
             "parameters": {
                 "regressor__alpha": 32.0
             }
         },
         {
-            "MAE": 32.5663761138916,
+            "MAE": 21.006454849243163,
             "parameters": {
                 "regressor__alpha": 34.0
             }
         },
         {
-            "MAE": 32.56297836303711,
+            "MAE": 21.026828002929687,
             "parameters": {
                 "regressor__alpha": 36.0
             }
         },
         {
-            "MAE": 32.559746170043944,
+            "MAE": 21.04694709777832,
             "parameters": {
                 "regressor__alpha": 38.0
             }
         },
         {
-            "MAE": 32.556524658203124,
+            "MAE": 21.066570281982422,
             "parameters": {
                 "regressor__alpha": 40.0
             }
         },
         {
-            "MAE": 32.55345993041992,
+            "MAE": 21.085808944702148,
             "parameters": {
                 "regressor__alpha": 42.0
             }
         },
         {
-            "MAE": 32.55065765380859,
+            "MAE": 21.10462303161621,
             "parameters": {
                 "regressor__alpha": 44.0
             }
         },
         {
-            "MAE": 32.54803314208984,
+            "MAE": 21.122953796386717,
             "parameters": {
                 "regressor__alpha": 46.0
             }
         },
         {
-            "MAE": 32.54548377990723,
+            "MAE": 21.140790939331055,
             "parameters": {
                 "regressor__alpha": 48.0
             }
         },
         {
-            "MAE": 32.54308662414551,
+            "MAE": 21.15805778503418,
             "parameters": {
                 "regressor__alpha": 50.0
             }
@@ -75,7 +69,7 @@
     ],
     "KNN": [
         {
-            "MAE": 24.193880462646483,
+            "MAE": 22.298141860961913,
             "parameters": {
                 "regressor__n_neighbors": 1,
                 "regressor__p": 1,
@@ -83,7 +77,7 @@
             }
         },
         {
-            "MAE": 24.193880150123483,
+            "MAE": 22.298142686991614,
             "parameters": {
                 "regressor__n_neighbors": 1,
                 "regressor__p": 1,
@@ -91,7 +85,7 @@
             }
         },
         {
-            "MAE": 29.02645950317383,
+            "MAE": 25.81717185974121,
             "parameters": {
                 "regressor__n_neighbors": 1,
                 "regressor__p": 2,
@@ -99,7 +93,7 @@
             }
         },
         {
-            "MAE": 29.02646095504814,
+            "MAE": 25.81717107204482,
             "parameters": {
                 "regressor__n_neighbors": 1,
                 "regressor__p": 2,
@@ -107,7 +101,7 @@
             }
         },
         {
-            "MAE": 23.274889755249024,
+            "MAE": 21.367642211914063,
             "parameters": {
                 "regressor__n_neighbors": 2,
                 "regressor__p": 1,
@@ -115,7 +109,7 @@
             }
         },
         {
-            "MAE": 22.978724422282927,
+            "MAE": 21.132814019673823,
             "parameters": {
                 "regressor__n_neighbors": 2,
                 "regressor__p": 1,
@@ -123,7 +117,7 @@
             }
         },
         {
-            "MAE": 27.576284408569336,
+            "MAE": 24.416679763793944,
             "parameters": {
                 "regressor__n_neighbors": 2,
                 "regressor__p": 2,
@@ -131,7 +125,7 @@
             }
         },
         {
-            "MAE": 27.35866312651122,
+            "MAE": 24.235889766849322,
             "parameters": {
                 "regressor__n_neighbors": 2,
                 "regressor__p": 2,
@@ -139,7 +133,7 @@
             }
         },
         {
-            "MAE": 22.848752593994142,
+            "MAE": 20.903100967407227,
             "parameters": {
                 "regressor__n_neighbors": 3,
                 "regressor__p": 1,
@@ -147,7 +141,7 @@
             }
         },
         {
-            "MAE": 22.48178661277077,
+            "MAE": 20.56356072194837,
             "parameters": {
                 "regressor__n_neighbors": 3,
                 "regressor__p": 1,
@@ -155,7 +149,7 @@
             }
         },
         {
-            "MAE": 27.11307601928711,
+            "MAE": 23.921690368652342,
             "parameters": {
                 "regressor__n_neighbors": 3,
                 "regressor__p": 2,
@@ -163,7 +157,7 @@
             }
         },
         {
-            "MAE": 26.8323878522889,
+            "MAE": 23.68205734258806,
             "parameters": {
                 "regressor__n_neighbors": 3,
                 "regressor__p": 2,
@@ -171,7 +165,7 @@
             }
         },
         {
-            "MAE": 22.896154403686523,
+            "MAE": 21.088656616210937,
             "parameters": {
                 "regressor__n_neighbors": 4,
                 "regressor__p": 1,
@@ -179,7 +173,7 @@
             }
         },
         {
-            "MAE": 22.491997294178,
+            "MAE": 20.65675166963561,
             "parameters": {
                 "regressor__n_neighbors": 4,
                 "regressor__p": 1,
@@ -187,7 +181,7 @@
             }
         },
         {
-            "MAE": 27.16836051940918,
+            "MAE": 23.925265884399415,
             "parameters": {
                 "regressor__n_neighbors": 4,
                 "regressor__p": 2,
@@ -195,7 +189,7 @@
             }
         },
         {
-            "MAE": 26.855301256027168,
+            "MAE": 23.624080200806464,
             "parameters": {
                 "regressor__n_neighbors": 4,
                 "regressor__p": 2,
@@ -203,7 +197,7 @@
             }
         },
         {
-            "MAE": 23.085045623779298,
+            "MAE": 21.226465225219727,
             "parameters": {
                 "regressor__n_neighbors": 5,
                 "regressor__p": 1,
@@ -211,7 +205,7 @@
             }
         },
         {
-            "MAE": 22.641091150790285,
+            "MAE": 20.756183225682932,
             "parameters": {
                 "regressor__n_neighbors": 5,
                 "regressor__p": 1,
@@ -219,7 +213,7 @@
             }
         },
         {
-            "MAE": 27.153495025634765,
+            "MAE": 24.145001220703126,
             "parameters": {
                 "regressor__n_neighbors": 5,
                 "regressor__p": 2,
@@ -227,120 +221,99 @@
             }
         },
         {
-            "MAE": 26.846790224862275,
+            "MAE": 23.788856182097003,
             "parameters": {
                 "regressor__n_neighbors": 5,
                 "regressor__p": 2,
                 "regressor__weights": "distance"
-            }
-        }
-    ],
-    "KernelRidge": [
-        {
-            "MAE": 60.34130020141602,
-            "parameters": {
-                "regressor__alpha": 1e-05,
-                "regressor__gamma": 1e-05
-            }
-        },
-        {
-            "MAE": 25.667101669311524,
-            "parameters": {
-                "regressor__alpha": 1e-05,
-                "regressor__gamma": 0.0001
-            }
-        },
-        {
-            "MAE": 26.363756561279295,
-            "parameters": {
-                "regressor__alpha": 1e-05,
-                "regressor__gamma": 0.001
-            }
-        },
-        {
-            "MAE": 37.28700942993164,
-            "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 1e-05
-            }
-        },
-        {
-            "MAE": 22.27394218444824,
-            "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 0.0001
-            }
-        },
-        {
-            "MAE": 25.910594177246093,
-            "parameters": {
-                "regressor__alpha": 0.0001,
-                "regressor__gamma": 0.001
-            }
-        },
-        {
-            "MAE": 30.681933975219728,
-            "parameters": {
-                "regressor__alpha": 0.001,
-                "regressor__gamma": 1e-05
-            }
-        },
-        {
-            "MAE": 21.070611190795898,
-            "parameters": {
-                "regressor__alpha": 0.001,
-                "regressor__gamma": 0.0001
-            }
-        },
-        {
-            "MAE": 24.65642738342285,
-            "parameters": {
-                "regressor__alpha": 0.001,
-                "regressor__gamma": 0.001
-            }
-        },
-        {
-            "MAE": 21.070611190795898,
-            "parameters": {
-                "regressor__alpha": 0.001,
-                "regressor__gamma": 0.0001
-            }
-        },
-        {
-            "MAE": 25.653490829467774,
-            "parameters": {
-                "regressor__alpha": 0.01,
-                "regressor__gamma": 0.0001
-            }
-        },
-        {
-            "MAE": 31.01486167907715,
-            "parameters": {
-                "regressor__alpha": 0.1,
-                "regressor__gamma": 0.0001
             }
         }
     ],
     "SVR": [
         {
-            "MAE": 21.341979264048035,
+            "MAE": 15.706183865541027,
             "parameters": {
                 "regressor__C": 1000.0,
                 "regressor__epsilon": 0.1
             }
         },
         {
-            "MAE": 21.361230162782856,
+            "MAE": 15.746027206669748,
             "parameters": {
                 "regressor__C": 1000.0,
                 "regressor__epsilon": 1.0
             }
         },
         {
-            "MAE": 22.19278844958382,
+            "MAE": 16.983257106624254,
             "parameters": {
                 "regressor__C": 1000.0,
                 "regressor__epsilon": 10.0
+            }
+        }
+    ],
+    "KernelRidge": [
+        {
+            "MAE": 15.027981185913086,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.0001
+            }
+        },
+        {
+            "MAE": 19.433324813842773,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MAE": 108.28497619628907,
+            "parameters": {
+                "regressor__alpha": 0.0001,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MAE": 16.755703735351563,
+            "parameters": {
+                "regressor__alpha": 0.001,
+                "regressor__gamma": 0.0001
+            }
+        },
+        {
+            "MAE": 18.753743362426757,
+            "parameters": {
+                "regressor__alpha": 0.001,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MAE": 108.32958679199218,
+            "parameters": {
+                "regressor__alpha": 0.001,
+                "regressor__gamma": 0.01
+            }
+        },
+        {
+            "MAE": 19.76834602355957,
+            "parameters": {
+                "regressor__alpha": 0.01,
+                "regressor__gamma": 0.0001
+            }
+        },
+        {
+            "MAE": 19.095156478881837,
+            "parameters": {
+                "regressor__alpha": 0.01,
+                "regressor__gamma": 0.001
+            }
+        },
+        {
+            "MAE": 108.78274688720703,
+            "parameters": {
+                "regressor__alpha": 0.01,
+                "regressor__gamma": 0.01
             }
         }
     ]

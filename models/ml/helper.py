@@ -25,7 +25,7 @@ def load_data(filepath, feature="eigenspectrum"):
         return X, y, test_fold
 
     elif feature == "sorted_coulomb":
-        X = sort_coulomb_matrics(coulomb_matrices)
+        X = sort_coulomb_matrices(coulomb_matrices)
         return X, y, test_fold
     
     elif feature == "expanded_coulomb":
@@ -39,14 +39,15 @@ def get_sorted_eigenvals(coulomb_matrices):
     sorted_eigenvals = np.sort(np.abs(eigenvals), axis=1)[:, ::-1]
     return sorted_eigenvals
 
-def sort_coulomb_matrics(coulomb_matrices):
-    sorted_coulomb_matrices = np.array([
-            cm[:, np.argsort(-np.linalg.norm(cm, axis=0))] for cm in coulomb_matrices
-        ])
-    upper_flatten_cm = np.array([
-        cm[np.triu_indices_from(cm)] for cm in sorted_coulomb_matrices
-    ])
-    return upper_flatten_cm
+def sort_coulomb_matrices(coulomb_matrices):
+    sorted_cms = []
+    
+    for cm in coulomb_matrices:
+        inds = np.argsort(-np.linalg.norm(cm, axis=0))
+        sorted_cm = cm[:,inds][inds,:]
+        upper_flatten_cm = sorted_cm[np.triu_indices_from(cm)]
+        sorted_cms.append(upper_flatten_cm)
+    return np.array(sorted_cms)
 
 def expand_coulomb_matrices(coulomb_matrices, atom_es, noise_level=1.0, n_expanded_samples=100):
     random_coulomb_matrices = []

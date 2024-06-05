@@ -6,9 +6,6 @@ from sklearn.model_selection import PredefinedSplit, GridSearchCV
 from helper import load_data, numpy_to_python
 from models import get_models
 
-def run_best_model(model, X, y, model_name):
-    pass
-
 def main(args):
     X, y, test_fold = load_data(args.data_path, feature=args.feature)
     
