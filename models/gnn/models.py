@@ -116,7 +116,7 @@ class CustomGNN_1(nn.Module):
         return self.predictor(x)
 
 class CustomGNN_2(nn.Module):
-    def __init__(self, node_features=1, pos_dim=3, edge_dim=0, hidden_dim=32, output_dim=1, num_filters=5):
+    def __init__(self, node_features=1, pos_dim=3, edge_dim=0, hidden_dim=128, output_dim=1, num_filters=8):
         super().__init__()
 
         self.num_filters = num_filters
@@ -139,11 +139,11 @@ class CustomGNN_2(nn.Module):
         return self.predictor(x)
 
 class CustomGNN_3(nn.Module):
-    def __init__(self, node_features=1, pos_dim=3, edge_dim=0, hidden_dim=32, output_dim=1, interaction_nums=5):
+    def __init__(self, node_features=1, pos_dim=3, edge_dim=0, hidden_dim=128, output_dim=1, interaction_nums=5):
         super().__init__()
         self.interaction_nums = interaction_nums
         self.conv1 = CustomConvLayer(node_features, hidden_dim, pos_dim=pos_dim, edge_dim=edge_dim)
-        self.conv = CustomConvLayer(hidden_dim, hidden_dim, pos_dim=1, edge_dim=edge_dim)
+        self.conv = nn.ModuleList([CustomConvLayer(hidden_dim, hidden_dim, pos_dim=1, edge_dim=edge_dim) for _ in range(interaction_nums)])
 
         self.predictor = pyg_nn.MLP([hidden_dim, hidden_dim, output_dim], bias=[False, True])
 
@@ -156,13 +156,13 @@ class CustomGNN_3(nn.Module):
                     #    edge_attr=edge_attr
                        )
         out.append(x.sigmoid())
-        
+
         for i in range(self.interaction_nums):
-            x = self.conv(edge_index, x=x, pos=pos, 
+            x = self.conv[i](edge_index, x=x, pos=pos, 
                         #    edge_attr=edge_attr
                         )
             out.append(x.sigmoid())
-        
+
         out_tensor = torch.stack(out, dim=0)
         x = torch.mean(out_tensor, dim=0)
         # Global Pooling:
@@ -367,9 +367,10 @@ class RMSE(pl.LightningModule):
         return rmse
     
 class GNNPL(pl.LightningModule):
-    def __init__(self, model, learning_rate=0.001, batch_size=64):
+    def __init__(self, model, learning_rate=0.01, batch_size=64, scheduler=None):
         super().__init__()
         self.model = model
+        self.scheduler = scheduler
         self.learning_rate = learning_rate
         self.batch_size = batch_size
         
@@ -383,23 +384,38 @@ class GNNPL(pl.LightningModule):
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.learning_rate)
         
-        linear_scheduler = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: max((1 - epoch / 50), 0.01))
+        linear_scheduler = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: max((1 - epoch / 50), 0.02))
+        
+        exp_scheduler = optim.lr_scheduler.LambdaLR(optimizer, lambda epoch: max((0.1 ** (epoch/30)), 0.02))
 
         plataeau_scheduler = optim.lr_scheduler.ReduceLROnPlateau(
             optimizer, 
             mode='min', 
             factor=0.1, 
             patience=2)
-    
-        lr_scheduler = {
-            'scheduler': linear_scheduler,
-            'monitor': 'train_mae', 
-            'interval': 'epoch',
-            'frequency': 1
-        }
+        lr_scheduler = None
+        if self.scheduler != None:
+            lr_scheduler = {
+                'monitor': 'train_mae', 
+                'interval': 'epoch',
+                'frequency': 1
+            }
+            if self.scheduler == 'exp':
+                lr_scheduler['scheduler'] = exp_scheduler
+            elif self.scheduler == 'linear':
+                lr_scheduler['scheduler'] = linear_scheduler
+            elif self.scheduler == 'plataeau':
+                lr_scheduler['scheduler'] = plataeau_scheduler
+            else:
+                raise ValueError(f'Unknown scheduler {self.scheduler}')
+
         return [optimizer], [lr_scheduler]
 
     def training_step(self, data, batch_idx):
+        
+        lr = self.optimizers().param_groups[0]['lr']
+        self.log('lr', float(f"{lr:.5e}"), on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
+        
         logits = self(data)
         loss = self.criterion(logits.squeeze(), data.y)
         self.log('train_mae', loss, on_step=False, on_epoch=True, prog_bar=False, batch_size=self.batch_size)
@@ -410,9 +426,6 @@ class GNNPL(pl.LightningModule):
         return loss
 
     def validation_step(self, data, batch_idx):
-                
-        lr = self.optimizers().param_groups[0]['lr']
-        self.log('lr', float(f"{lr:.5e}"), on_step=False, on_epoch=True, prog_bar=True, batch_size=self.batch_size)
         
         logits = self(data)
         loss = self.criterion(logits.squeeze(), data.y)

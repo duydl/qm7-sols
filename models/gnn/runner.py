@@ -9,11 +9,6 @@ import matplotlib.pyplot as plt
 from torch_geometric.data import DataLoader as pyg_loader
 from models import *
 
-def create_dataloaders(train_dataset, val_dataset, batch_size=32):
-    train_loader = pyg_loader(train_dataset, batch_size=batch_size, num_workers=12)
-    val_loader = pyg_loader(val_dataset, batch_size=batch_size, num_workers=12)
-    return train_loader, val_loader
-
 def main(args):
     # Load dataset
     data_path = args.data_path
@@ -83,9 +78,10 @@ def main(args):
         # plt.show()
 
     # Create dataloaders
-    train_loader, val_loader = create_dataloaders(data_train, data_val, batch_size=args.batch_size)
+    train_loader = pyg_loader(data_train, batch_size=args.batch_size, num_workers=12)
+    val_loader = pyg_loader(data_val, batch_size=args.batch_size, num_workers=12)
     
-    model_pl = GNNPL(model=model, learning_rate=args.learning_rate)
+    model_pl = GNNPL(model=model, learning_rate=args.learning_rate, scheduler=args.scheduler, batch_size=args.batch_size)
 
     # Setup loggers
     mlflow_logger = pl.loggers.MLFlowLogger(
@@ -114,8 +110,8 @@ def main(args):
     )
     checkpoint_callback = pl.callbacks.ModelCheckpoint(
         monitor='train_mae',
-        dirpath=args.log_dir + '/best_model',
-        filename=f"{args.model}_f{args.fold}_{args.version}"+'-{epoch:02d}-{train_mae:.2f}-{val_mae:.2f}',
+        dirpath=f"{args.log_dir}/{args.model}/f{args.fold}_{args.version}",
+        filename='{epoch:02d}-{train_mae:.2f}-{val_mae:.2f}',
         save_top_k=1,
         mode='min',
     )
@@ -147,8 +143,10 @@ if __name__ == "__main__":
                         help='Model version (default: 0)')
     parser.add_argument('--learning_rate', type=float, default=0.01,
                         help='Learning rate for the optimizer (default: 0.01)')
-    parser.add_argument('--batch_size', type=int, default=32,
-                        help='Batch size for training (default: 32)')
+    parser.add_argument('--batch_size', type=int, default=64,
+                        help='Batch size for training (default: 64)')
+    parser.add_argument('--scheduler', type=str, default='exp',
+                        help='Scheduler for optimizer (default: exp)')
     parser.add_argument('--max_epochs', type=int, default=100,
                         help='Maximum number of epochs for training (default: 100)')
     parser.add_argument('--log_dir', type=str, default='logs',
